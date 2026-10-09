@@ -5,6 +5,8 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
+  background: #0b0d14;
+  color: #f4f5fa;
 }
 
 #root {

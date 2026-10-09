@@ -1,9 +1,7 @@
+import Navbar from './components/Navbar.jsx'
+
 function App() {
-  return (
-    <main>
-      <h1>SENU</h1>
-    </main>
-  )
+  return <Navbar />
 }
 
 export default App
