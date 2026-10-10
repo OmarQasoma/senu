@@ -1,0 +1,146 @@
+.hero {
+  min-height: 580px;
+  padding: 90px 40px;
+  display: flex;
+  align-items: center;
+  background:
+    linear-gradient(
+      0deg,
+      #0b0d14 0%,
+      transparent 45%
+    ),
+    radial-gradient(
+      ellipse at 85% 30%,
+      rgba(49, 110, 135, 0.22),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse at 65% 70%,
+      rgba(92, 62, 135, 0.14),
+      transparent 55%
+    ),
+    #0e121b;
+}
+
+.hero-content {
+  width: 100%;
+  max-width: 580px;
+}
+
+.hero-label {
+  margin: 0 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #77dce9;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.hero-label::before {
+  content: "";
+  width: 20px;
+  height: 2px;
+  background: currentColor;
+}
+
+.hero h1 {
+  margin: 0 0 20px;
+  color: #f4f5fa;
+  font-size: clamp(36px, 4.5vw, 64px);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+
+.hero-meta {
+  margin: 0 0 24px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  list-style: none;
+  color: #a1aabc;
+  font-size: 14px;
+}
+
+.hero-rating {
+  color: #f4f5fa;
+}
+
+.hero-rating span {
+  margin-right: 5px;
+  color: #77dce9;
+}
+
+.hero-age {
+  padding: 3px 6px;
+  border: 1px solid #485061;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.hero-description {
+  max-width: 500px;
+  margin: 0 0 30px;
+  color: #b7bfce;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.hero-button {
+  min-height: 48px;
+  padding: 12px 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.hero-button-primary {
+  background: #77dce9;
+  color: #08131b;
+}
+
+.hero-button-secondary {
+  border-color: #485061;
+  background: rgba(255, 255, 255, 0.04);
+  color: #f4f5fa;
+}
+
+.hero-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.hero-button:disabled {
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .hero {
+    min-height: 480px;
+    padding: 64px 16px;
+  }
+
+  .hero-meta {
+    gap: 12px;
+  }
+
+  .hero-description {
+    font-size: 15px;
+  }
+}
