@@ -3,10 +3,12 @@ import { useSearchParams } from 'react-router'
 
 import Hero from '../components/Hero.jsx'
 import MovieCard from '../components/MovieCard.jsx'
+import GenreButtons from '../components/GenreButtons.jsx'
 
 import {
   getPopularMovies,
-  searchMovies
+  searchMovies,
+  getMoviesByGenre,
 } from '../services/movieApi.js'
 
 import './Home.css'
@@ -21,22 +23,29 @@ function Home() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [retryCount, setRetryCount] = useState(0)
+  const [selectedGenre, setSelectedGenre] = useState('')
 
   useEffect(() => {
     setMovies([])
     setPage(1)
     setError('')
     setLoading(true)
-  }, [searchQuery])
+  }, [searchQuery, selectedGenre])
 
   useEffect(() => {
     let active = true
 
     async function getMovies() {
       try {
-        const data = searchQuery
-          ? await searchMovies(searchQuery, page)
-          : await getPopularMovies(page)
+        let data
+
+        if (searchQuery) {
+          data = await searchMovies(searchQuery, page)
+        } else if (selectedGenre) {
+          data = await getMoviesByGenre(selectedGenre, page)
+        } else {
+          data = await getPopularMovies(page)
+        }
 
         if (
           !data ||
@@ -49,11 +58,12 @@ function Home() {
 
         if (active) {
           setMovies(previousMovies => {
-            const newMovies = data.results.filter(movie => (
-              !previousMovies.some(
-                savedMovie => savedMovie.id === movie.id
-              )
-            ))
+            const newMovies = data.results.filter(
+              movie =>
+                !previousMovies.some(
+                  savedMovie => savedMovie.id === movie.id
+                )
+            )
 
             return [...previousMovies, ...newMovies]
           })
@@ -76,7 +86,11 @@ function Home() {
     return () => {
       active = false
     }
-  }, [page, retryCount, searchQuery])
+  }, [page, retryCount, searchQuery, selectedGenre])
+
+  function handleGenreChange(genreId) {
+    setSelectedGenre(genreId)
+  }
 
   function handleLoadMore() {
     if (loading) return
@@ -97,11 +111,20 @@ function Home() {
 
       <section className="home-movies" id="movies">
 
-        <h2>
-          {searchQuery
-            ? `Search results for "${searchQuery}"`
-            : 'Popular Movies'}
-        </h2>
+        <div className="movies-header">
+          {searchQuery && (
+            <h2>
+              Search results for "{searchQuery}"
+            </h2>
+          )}
+
+          {!searchQuery && (
+            <GenreButtons
+              selectedGenre={selectedGenre}
+              onSelectGenre={handleGenreChange}
+            />
+          )}
+        </div>
 
         {loading && (
           <p role="status">Loading movies...</p>

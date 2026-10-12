@@ -23,6 +23,22 @@ export async function getMovieDetails(movieId) {
 }
 
 
+// for grenre buttons
+
+export async function getMoviesByGenre(genreId, page = 1) {
+  const response = await fetch(
+    `/api/tmdb/discover/movie?with_genres=${genreId}&page=${page}`
+  )
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch movies by genre')
+  }
+
+  const data = await response.json()
+
+  return data
+}
+
 // for searchMovie 
 export async function searchMovies(query, page = 1) {
   const response = await fetch(

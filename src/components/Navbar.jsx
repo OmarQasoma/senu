@@ -32,21 +32,31 @@ function Navbar() {
           <img src={senuLogo} alt="SENU" />
         </Link>
 
-        <nav className="navbar-nav" aria-label="Main navigation">
-          <NavLink className="navbar-link" to="/" end>
+        <nav
+          className="navbar-nav"
+          aria-label="Main navigation"
+        >
+          <NavLink
+            className="navbar-link"
+            to="/"
+            end
+          >
             Home
           </NavLink>
 
-          <NavLink className="navbar-link" to="/watchlist">
-            Watchlist
+          <NavLink
+            className="navbar-link"
+            to="/top-rated"
+          >
+            Top Rated
           </NavLink>
 
-          <span
+          <NavLink
             className="navbar-link"
-            title="Genres — coming soon"
+            to="/watchlist"
           >
-            Genres
-          </span>
+            Watchlist
+          </NavLink>
         </nav>
 
         <div className="navbar-actions">
@@ -71,27 +81,11 @@ function Navbar() {
               placeholder="Search movies..."
               aria-label="Search movies"
               value={query}
-              onChange={event => setQuery(event.target.value)}
+              onChange={event =>
+                setQuery(event.target.value)
+              }
             />
           </form>
-
-          <button
-            className="navbar-icon"
-            type="button"
-            aria-label="Watchlist"
-            title="Watchlist"
-            onClick={() => navigate('/watchlist')}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              aria-hidden="true"
-            >
-              <path d="M6 4h12v16l-6-4-6 4V4Z" />
-            </svg>
-          </button>
 
           <button
             className="navbar-icon navbar-profile"
