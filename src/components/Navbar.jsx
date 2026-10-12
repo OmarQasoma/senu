@@ -37,9 +37,9 @@ function Navbar() {
             Home
           </NavLink>
 
-          <Link className="navbar-link" to="/">
-            Movies
-          </Link>
+          <NavLink className="navbar-link" to="/watchlist">
+            Watchlist
+          </NavLink>
 
           <span
             className="navbar-link"
@@ -78,9 +78,9 @@ function Navbar() {
           <button
             className="navbar-icon"
             type="button"
-            aria-label="Shopping cart — coming soon"
-            title="Shopping cart — coming soon"
-            disabled
+            aria-label="Watchlist"
+            title="Watchlist"
+            onClick={() => navigate('/watchlist')}
           >
             <svg
               viewBox="0 0 24 24"
@@ -89,9 +89,7 @@ function Navbar() {
               strokeWidth="1.8"
               aria-hidden="true"
             >
-              <path d="M3 4h2l2.5 11h11L21 7H6" />
-              <circle cx="9" cy="20" r="1" />
-              <circle cx="18" cy="20" r="1" />
+              <path d="M6 4h12v16l-6-4-6 4V4Z" />
             </svg>
           </button>
 

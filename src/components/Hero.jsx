@@ -1,8 +1,26 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import './Hero.css'
 
-// Display the featured movie using data passed from Home
+const WATCHLIST_KEY = 'senu-watchlist'
+
 function Hero({ movie }) {
+  const [isInWatchlist, setIsInWatchlist] = useState(false)
+
+  useEffect(() => {
+    if (!movie) return
+
+    const savedWatchlist = JSON.parse(
+      localStorage.getItem(WATCHLIST_KEY) || '[]'
+    )
+
+    const movieExists = savedWatchlist.some(
+      savedMovie => savedMovie.id === movie.id
+    )
+
+    setIsInWatchlist(movieExists)
+  }, [movie])
+
   if (!movie) return null
 
   const year = movie.release_date?.slice(0, 4)
@@ -11,7 +29,6 @@ function Hero({ movie }) {
     ? movie.vote_average.toFixed(1)
     : 'N/A'
 
-  // Add the movie backdrop with dark overlays
   const backgroundStyle = movie.backdrop_path
     ? {
         backgroundImage: `
@@ -22,6 +39,34 @@ function Hero({ movie }) {
       }
     : undefined
 
+  function handleWatchlist() {
+    const savedWatchlist = JSON.parse(
+      localStorage.getItem(WATCHLIST_KEY) || '[]'
+    )
+
+    if (isInWatchlist) {
+      const updatedWatchlist = savedWatchlist.filter(
+        savedMovie => savedMovie.id !== movie.id
+      )
+
+      localStorage.setItem(
+        WATCHLIST_KEY,
+        JSON.stringify(updatedWatchlist)
+      )
+
+      setIsInWatchlist(false)
+    } else {
+      const updatedWatchlist = [...savedWatchlist, movie]
+
+      localStorage.setItem(
+        WATCHLIST_KEY,
+        JSON.stringify(updatedWatchlist)
+      )
+
+      setIsInWatchlist(true)
+    }
+  }
+
   return (
     <section
       className="hero"
@@ -29,13 +74,10 @@ function Hero({ movie }) {
       style={backgroundStyle}
     >
       <div className="hero-content">
-        {/* Hero label */}
         <p className="hero-label">Featured Tonight</p>
 
-        {/* Movie title */}
         <h1 id="hero-title">{movie.title}</h1>
 
-        {/* Rating and release year */}
         <ul className="hero-meta" aria-label="Movie information">
           <li className="hero-rating">
             <span aria-hidden="true">★</span> {rating}
@@ -44,12 +86,10 @@ function Hero({ movie }) {
           {year && <li>{year}</li>}
         </ul>
 
-        {/* Movie overview */}
         <p className="hero-description">
           {movie.overview || 'No description available.'}
         </p>
 
-        {/* Movie actions */}
         <div className="hero-actions">
           <Link
             className="hero-button hero-button-primary"
@@ -62,19 +102,15 @@ function Hero({ movie }) {
           <button
             className="hero-button hero-button-secondary"
             type="button"
-            title="Trailer will be connected later"
-            disabled
+            onClick={handleWatchlist}
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              aria-hidden="true"
-            >
-              <path d="M8 5v14l11-7z" strokeLinejoin="round" />
-            </svg>
-            Watch Trailer
+            <span aria-hidden="true">
+              {isInWatchlist ? '−' : '+'}
+            </span>
+
+            {isInWatchlist
+              ? 'Remove from Watchlist'
+              : 'Add to Watchlist'}
           </button>
         </div>
       </div>
