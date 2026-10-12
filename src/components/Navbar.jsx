@@ -1,3 +1,4 @@
+import { Link, NavLink } from 'react-router'
 import senuLogo from '../assets/senu-logo.png'
 import './Navbar.css'
 
@@ -5,20 +6,29 @@ function Navbar() {
   return (
     <header className="navbar">
       <div className="navbar-inner">
-        <a className="navbar-logo" href="/" aria-label="SENU Home">
+        <Link
+          className="navbar-logo"
+          to="/"
+          aria-label="SENU Home"
+        >
           <img src={senuLogo} alt="SENU" />
-        </a>
+        </Link>
 
         <nav className="navbar-nav" aria-label="Main navigation">
-          <a className="navbar-link" href="/" aria-current="page">
+          <NavLink className="navbar-link" to="/" end>
             Home
-          </a>
-          <a className="navbar-link" href="#movies">
+          </NavLink>
+
+          <Link className="navbar-link" to="/">
             Movies
-          </a>
-          <a className="navbar-link" href="#genres">
+          </Link>
+
+          <span
+            className="navbar-link"
+            title="Genres — coming soon"
+          >
             Genres
-          </a>
+          </span>
         </nav>
 
         <div className="navbar-actions">

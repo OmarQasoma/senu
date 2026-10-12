@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Hero from '../components/Hero.jsx'
+import MovieCard from '../components/MovieCard.jsx'
 import './Home.css'
 
 function Home() {
@@ -19,6 +20,10 @@ function Home() {
         }
 
         const data = await response.json()
+
+        if (!Array.isArray(data.results)) {
+          throw new Error('Invalid movie data.')
+        }
 
         if (active) {
           setMovies(data.results)
@@ -43,19 +48,22 @@ function Home() {
 
   return (
     <main>
-      <Hero />
+      <Hero movie={movies[0]} />
 
       <section className="home-movies" id="movies">
         <h2>Popular Movies</h2>
 
         {loading && <p role="status">Loading movies...</p>}
         {error && <p role="alert">{error}</p>}
+        {!loading && !error && movies.length === 0 && (
+          <p>No movies available.</p>
+        )}
 
-        <ul>
+        <div className="movie-grid">
           {movies.map(movie => (
-            <li key={movie.id}>{movie.title}</li>
+            <MovieCard key={movie.id} movie={movie} />
           ))}
-        </ul>
+        </div>
       </section>
     </main>
   )

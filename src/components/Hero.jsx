@@ -1,39 +1,63 @@
+import { Link } from 'react-router'
 import './Hero.css'
 
-function Hero() {
+// Display the featured movie using data passed from Home
+function Hero({ movie }) {
+  if (!movie) return null
+
+  const year = movie.release_date?.slice(0, 4)
+
+  const rating = Number.isFinite(movie.vote_average)
+    ? movie.vote_average.toFixed(1)
+    : 'N/A'
+
+  // Add the movie backdrop with dark overlays
+  const backgroundStyle = movie.backdrop_path
+    ? {
+        backgroundImage: `
+          linear-gradient(90deg, #0b0d14, rgba(11, 13, 20, 0.3)),
+          linear-gradient(0deg, #0b0d14, transparent 70%),
+          url("https://image.tmdb.org/t/p/w1280${movie.backdrop_path}")
+        `,
+      }
+    : undefined
+
   return (
-    <section className="hero" aria-labelledby="hero-title">
+    <section
+      className="hero"
+      aria-labelledby="hero-title"
+      style={backgroundStyle}
+    >
       <div className="hero-content">
+        {/* Hero label */}
         <p className="hero-label">Featured Tonight</p>
 
-        <h1 id="hero-title">Dune: Part Two</h1>
+        {/* Movie title */}
+        <h1 id="hero-title">{movie.title}</h1>
 
+        {/* Rating and release year */}
         <ul className="hero-meta" aria-label="Movie information">
           <li className="hero-rating">
-            <span aria-hidden="true">★</span> 8.5
+            <span aria-hidden="true">★</span> {rating}
           </li>
-          <li>2024</li>
-          <li>Sci-Fi / Adventure</li>
-          <li>2h 46m</li>
-          <li className="hero-age">PG-13</li>
+
+          {year && <li>{year}</li>}
         </ul>
 
+        {/* Movie overview */}
         <p className="hero-description">
-          Paul Atreides unites with Chani and the Fremen on a path
-          of revenge, facing a choice between love and the fate
-          of the universe.
+          {movie.overview || 'No description available.'}
         </p>
 
+        {/* Movie actions */}
         <div className="hero-actions">
-          <button
+          <Link
             className="hero-button hero-button-primary"
-            type="button"
-            title="Movie details will be connected later"
-            disabled
+            to={`/movie/${movie.id}`}
           >
             <span aria-hidden="true">↗</span>
             View Details
-          </button>
+          </Link>
 
           <button
             className="hero-button hero-button-secondary"
