@@ -1,11 +1,29 @@
-import { Link, NavLink } from 'react-router'
+import { useState } from 'react'
+import { Link, NavLink, useNavigate } from 'react-router'
 import senuLogo from '../assets/senu-logo.png'
 import './Navbar.css'
 
 function Navbar() {
+  const [query, setQuery] = useState('')
+  const navigate = useNavigate()
+
+  function handleSearch(event) {
+    event.preventDefault()
+
+    const searchText = query.trim()
+
+    if (!searchText) {
+      navigate('/')
+      return
+    }
+
+    navigate(`/?search=${encodeURIComponent(searchText)}`)
+  }
+
   return (
     <header className="navbar">
       <div className="navbar-inner">
+
         <Link
           className="navbar-logo"
           to="/"
@@ -32,7 +50,11 @@ function Navbar() {
         </nav>
 
         <div className="navbar-actions">
-          <label className="navbar-search">
+
+          <form
+            className="navbar-search"
+            onSubmit={handleSearch}
+          >
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -48,8 +70,10 @@ function Navbar() {
               type="search"
               placeholder="Search movies..."
               aria-label="Search movies"
+              value={query}
+              onChange={event => setQuery(event.target.value)}
             />
-          </label>
+          </form>
 
           <button
             className="navbar-icon"
@@ -89,6 +113,7 @@ function Navbar() {
               <path d="M5 21v-2a7 7 0 0 1 14 0v2" />
             </svg>
           </button>
+
         </div>
       </div>
     </header>
