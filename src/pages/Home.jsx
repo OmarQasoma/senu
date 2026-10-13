@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router'
 import Hero from '../components/Hero.jsx'
 import MovieCard from '../components/MovieCard.jsx'
 import GenreButtons from '../components/GenreButtons.jsx'
+import LoadingSpinner from '../components/LoadingSpinner.jsx'
 
 import {
   getPopularMovies,
@@ -16,21 +17,25 @@ import './Home.css'
 function Home() {
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get('search')?.trim() || ''
+  const [selectedGenre, setSelectedGenre] = useState('')
 
+  return (
+    <HomeMovies
+      key={JSON.stringify([searchQuery, selectedGenre])}
+      searchQuery={searchQuery}
+      selectedGenre={selectedGenre}
+      onSelectGenre={setSelectedGenre}
+    />
+  )
+}
+
+function HomeMovies({ searchQuery, selectedGenre, onSelectGenre }) {
   const [movies, setMovies] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [retryCount, setRetryCount] = useState(0)
-  const [selectedGenre, setSelectedGenre] = useState('')
-
-  useEffect(() => {
-    setMovies([])
-    setPage(1)
-    setError('')
-    setLoading(true)
-  }, [searchQuery, selectedGenre])
 
   useEffect(() => {
     let active = true
@@ -88,10 +93,6 @@ function Home() {
     }
   }, [page, retryCount, searchQuery, selectedGenre])
 
-  function handleGenreChange(genreId) {
-    setSelectedGenre(genreId)
-  }
-
   function handleLoadMore() {
     if (loading) return
 
@@ -121,13 +122,13 @@ function Home() {
           {!searchQuery && (
             <GenreButtons
               selectedGenre={selectedGenre}
-              onSelectGenre={handleGenreChange}
+              onSelectGenre={onSelectGenre}
             />
           )}
         </div>
 
         {loading && (
-          <p role="status">Loading movies...</p>
+          <LoadingSpinner />
         )}
 
         {error && (

@@ -1,25 +1,10 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
+import useWatchlist from '../hooks/useWatchlist.js'
+import { toggleWatchlist } from '../storage/localStorage.js'
 import './Hero.css'
 
-const WATCHLIST_KEY = 'senu-watchlist'
-
 function Hero({ movie }) {
-  const [isInWatchlist, setIsInWatchlist] = useState(false)
-
-  useEffect(() => {
-    if (!movie) return
-
-    const savedWatchlist = JSON.parse(
-      localStorage.getItem(WATCHLIST_KEY) || '[]'
-    )
-
-    const movieExists = savedWatchlist.some(
-      savedMovie => savedMovie.id === movie.id
-    )
-
-    setIsInWatchlist(movieExists)
-  }, [movie])
+  const isInWatchlist = useWatchlist(movie?.id)
 
   if (!movie) return null
 
@@ -40,31 +25,7 @@ function Hero({ movie }) {
     : undefined
 
   function handleWatchlist() {
-    const savedWatchlist = JSON.parse(
-      localStorage.getItem(WATCHLIST_KEY) || '[]'
-    )
-
-    if (isInWatchlist) {
-      const updatedWatchlist = savedWatchlist.filter(
-        savedMovie => savedMovie.id !== movie.id
-      )
-
-      localStorage.setItem(
-        WATCHLIST_KEY,
-        JSON.stringify(updatedWatchlist)
-      )
-
-      setIsInWatchlist(false)
-    } else {
-      const updatedWatchlist = [...savedWatchlist, movie]
-
-      localStorage.setItem(
-        WATCHLIST_KEY,
-        JSON.stringify(updatedWatchlist)
-      )
-
-      setIsInWatchlist(true)
-    }
+    toggleWatchlist(movie)
   }
 
   return (

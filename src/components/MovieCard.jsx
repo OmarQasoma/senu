@@ -1,11 +1,10 @@
 import { Link } from 'react-router'
-import { useEffect, useState } from 'react'
+import useWatchlist from '../hooks/useWatchlist.js'
+import { toggleWatchlist } from '../storage/localStorage.js'
 import './MovieCard.css'
 
-const WATCHLIST_KEY = 'senu-watchlist'
-
 function MovieCard({ movie }) {
-  const [isInWatchlist, setIsInWatchlist] = useState(false)
+  const isInWatchlist = useWatchlist(movie.id)
 
   const year = movie.release_date?.slice(0, 4) || 'Unknown year'
 
@@ -13,42 +12,8 @@ function MovieCard({ movie }) {
     ? movie.vote_average.toFixed(1)
     : 'N/A'
 
-  useEffect(() => {
-    const savedWatchlist = JSON.parse(
-      localStorage.getItem(WATCHLIST_KEY) || '[]'
-    )
-
-    setIsInWatchlist(
-      savedWatchlist.some(savedMovie => savedMovie.id === movie.id)
-    )
-  }, [movie.id])
-
   function handleWatchlist() {
-    const savedWatchlist = JSON.parse(
-      localStorage.getItem(WATCHLIST_KEY) || '[]'
-    )
-
-    if (isInWatchlist) {
-      const updatedWatchlist = savedWatchlist.filter(
-        savedMovie => savedMovie.id !== movie.id
-      )
-
-      localStorage.setItem(
-        WATCHLIST_KEY,
-        JSON.stringify(updatedWatchlist)
-      )
-
-      setIsInWatchlist(false)
-    } else {
-      const updatedWatchlist = [...savedWatchlist, movie]
-
-      localStorage.setItem(
-        WATCHLIST_KEY,
-        JSON.stringify(updatedWatchlist)
-      )
-
-      setIsInWatchlist(true)
-    }
+    toggleWatchlist(movie)
   }
 
   return (
