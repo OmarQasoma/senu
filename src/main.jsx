@@ -8,26 +8,28 @@ import Home from './pages/Home.jsx'
 import MovieDetails from './pages/MovieDetails.jsx'
 import './index.css'
 
+// router configuration setting.
 const router = createHashRouter([
   {
     path: '/',
-    Component: App,
+    Component: App, // parent component
     children: [
       {
         index: true,
-        Component: Home,
+        Component: Home, // child component for the home page
       },
       {
-        path: 'movie/:movieId',
+        path: 'movie/:movieId',  // child component for the home page
         Component: MovieDetails,
       },
       {
-        path: 'watchlist',
+        path: 'watchlist',  // child component for the home page
         Component: Watchlist,
       },
     ],
   },
 ])
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

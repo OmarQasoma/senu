@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
+
+import { getMovieDetails } from '../services/movieApi.js'
 import './MovieDetails.css'
 
 function MovieDetails() {
@@ -17,13 +19,7 @@ function MovieDetails() {
       setError('')
 
       try {
-        const response = await fetch(`/api/tmdb/movie/${movieId}`)
-
-        if (!response.ok) {
-          throw new Error('Could not load this movie. Please try again.') // IFFFF im not sure 
-        }
-
-        const data = await response.json()
+        const data = await getMovieDetails(movieId)
 
         if (
           !data ||

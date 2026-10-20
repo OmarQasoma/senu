@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router'
 
 import Hero from '../components/Hero.jsx'
@@ -16,7 +16,7 @@ import './Home.css'
 function Home() {
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get('search')?.trim() || ''
-   
+
   const [movies, setMovies] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
@@ -25,18 +25,27 @@ function Home() {
   const [retryCount, setRetryCount] = useState(0)
 
   const [selectedGenre, setSelectedGenre] = useState('')
-
-  useEffect(() => {
-    setMovies([])
-    setPage(1)
-    setError('')
-    setLoading(true)
-  }, [searchQuery, selectedGenre])
+  const activeRequestKeyRef = useRef(`${searchQuery}:${selectedGenre}`)
 
   useEffect(() => {
     let active = true
 
     async function getMovies() {
+      const requestKey = `${searchQuery}:${selectedGenre}`
+
+      if (activeRequestKeyRef.current !== requestKey) {
+        activeRequestKeyRef.current = requestKey
+        setMovies([])
+        setTotalPages(1)
+        setError('')
+        setLoading(true)
+
+        if (page !== 1) {
+          setPage(1)
+          return
+        }
+      }
+
       try {
         let data
 
@@ -65,6 +74,10 @@ function Home() {
                   savedMovie => savedMovie.id === movie.id
                 )
             )
+
+            if (page === 1) {
+              return newMovies
+            }
 
             return [...previousMovies, ...newMovies]
           })

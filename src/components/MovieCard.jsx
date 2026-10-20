@@ -3,7 +3,7 @@ import useWatchlist from '../hooks/useWatchlist.js'
 import { toggleWatchlist } from '../storage/localStorage.js'
 import './MovieCard.css'
 
-function MovieCard({ movie }) {
+function MovieCard({ movie, onWatchlistChange }) {
   const isInWatchlist = useWatchlist(movie.id)
 
   const year = movie.release_date?.slice(0, 4) || 'Unknown year'
@@ -14,6 +14,7 @@ function MovieCard({ movie }) {
 
   function handleWatchlist() {
     toggleWatchlist(movie)
+    onWatchlistChange && onWatchlistChange()
   }
 
   return (

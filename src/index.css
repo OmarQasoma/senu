@@ -5,10 +5,18 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #0b0d14;
+  background: #052346;
   color: #f4f5fa;
 }
 
 #root {
   min-height: 100vh;
+}
+
+footer {
+  margin-top: 28px;
+  padding: 60px 40px;
+  border-top: 1px solid #283040;
+  color: #ffffff;
+  text-align: center;
 }
