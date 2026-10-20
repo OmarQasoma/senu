@@ -20,7 +20,7 @@ function MovieDetails() {
         const response = await fetch(`/api/tmdb/movie/${movieId}`)
 
         if (!response.ok) {
-          throw new Error('Could not load this movie. Please try again.')
+          throw new Error('Could not load this movie. Please try again.') // IFFFF im not sure 
         }
 
         const data = await response.json()
