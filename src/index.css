@@ -11,10 +11,12 @@ body {
 
 #root {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 footer {
-  margin-top: 28px;
+  margin-top: auto;
   padding: 60px 40px;
   border-top: 1px solid #283040;
   color: #ffffff;

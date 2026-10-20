@@ -16,14 +16,14 @@ const router = createHashRouter([
     children: [
       {
         index: true,
-        Component: Home, // child component for the home page
+        Component: Home, 
       },
       {
-        path: 'movie/:movieId',  // child component for the home page
+        path: 'movie/:movieId',  
         Component: MovieDetails,
       },
       {
-        path: 'watchlist',  // child component for the home page
+        path: 'watchlist',  
         Component: Watchlist,
       },
     ],

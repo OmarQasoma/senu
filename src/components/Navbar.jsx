@@ -44,12 +44,6 @@ function Navbar() {
             Home
           </NavLink>
 
-          <NavLink
-            className="navbar-link"
-            to="/top-rated"
-          >
-            Top Rated
-          </NavLink>
 
           <NavLink
             className="navbar-link"
