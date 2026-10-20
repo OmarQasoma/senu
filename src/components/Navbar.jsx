@@ -1,11 +1,29 @@
-import { Link, NavLink } from 'react-router'
+import { useState } from 'react'
+import { Link, NavLink, useNavigate } from 'react-router'
 import senuLogo from '../assets/senu-logo.png'
 import './Navbar.css'
 
 function Navbar() {
+  const [query, setQuery] = useState('')
+  const navigate = useNavigate()
+
+  function handleSearch(event) {
+    event.preventDefault()
+
+    const searchText = query.trim()
+
+    if (!searchText) {
+      navigate('/')
+      return
+    }
+
+    navigate(`/?search=${encodeURIComponent(searchText)}`)
+  }
+
   return (
     <header className="navbar">
       <div className="navbar-inner">
+
         <Link
           className="navbar-logo"
           to="/"
@@ -14,25 +32,33 @@ function Navbar() {
           <img src={senuLogo} alt="SENU" />
         </Link>
 
-        <nav className="navbar-nav" aria-label="Main navigation">
-          <NavLink className="navbar-link" to="/" end>
+        <nav
+          className="navbar-nav"
+          aria-label="Main navigation"
+        >
+          <NavLink
+            className="navbar-link"
+            to="/"
+            end
+          >
             Home
           </NavLink>
 
-          <Link className="navbar-link" to="/">
-            Movies
-          </Link>
 
-          <span
+          <NavLink
             className="navbar-link"
-            title="Genres — coming soon"
+            to="/watchlist"
           >
-            Genres
-          </span>
+            Watchlist
+          </NavLink>
         </nav>
 
         <div className="navbar-actions">
-          <label className="navbar-search">
+
+          <form
+            className="navbar-search"
+            onSubmit={handleSearch}
+          >
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -48,28 +74,12 @@ function Navbar() {
               type="search"
               placeholder="Search movies..."
               aria-label="Search movies"
+              value={query}
+              onChange={event =>
+                setQuery(event.target.value)
+              }
             />
-          </label>
-
-          <button
-            className="navbar-icon"
-            type="button"
-            aria-label="Shopping cart — coming soon"
-            title="Shopping cart — coming soon"
-            disabled
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              aria-hidden="true"
-            >
-              <path d="M3 4h2l2.5 11h11L21 7H6" />
-              <circle cx="9" cy="20" r="1" />
-              <circle cx="18" cy="20" r="1" />
-            </svg>
-          </button>
+          </form>
 
           <button
             className="navbar-icon navbar-profile"
@@ -89,6 +99,7 @@ function Navbar() {
               <path d="M5 21v-2a7 7 0 0 1 14 0v2" />
             </svg>
           </button>
+
         </div>
       </div>
     </header>

@@ -1,4 +1,3 @@
-
 .movie-card {
   min-width: 0;
 }
@@ -14,7 +13,6 @@
   outline: 2px solid #77dce9;
   outline-offset: 4px;
 }
-
 
 .movie-card-poster {
   display: block;
@@ -42,7 +40,6 @@
   line-height: 1.4;
 }
 
-
 .movie-card .movie-card-meta {
   display: flex;
   justify-content: space-between;
@@ -56,6 +53,45 @@
   color: #75dcea;
 }
 
+/* Watchlist button */
+.movie-card-watchlist {
+  margin-top: 8px;
+  padding: 6px 10px;
+
+  border: 1px solid rgba(117, 220, 234, 0.4);
+  border-radius: 7px;
+
+  background: transparent;
+  color: #75dcea;
+
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 150ms ease;
+}
+
+.movie-card-watchlist:hover {
+  background: rgba(117, 220, 234, 0.1);
+  border-color: #75dcea;
+}
+
+.movie-card-watchlist:active {
+  transform: scale(0.97);
+}
+
+.movie-card-watchlist-active {
+  background: rgba(117, 220, 234, 0.14);
+  border-color: #75dcea;
+  color: #75dcea;
+}
+
 /* Gently lift the poster when the mouse enters the card */
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .movie-card:hover .movie-card-poster {
@@ -66,7 +102,8 @@
 
 /* Respect the user's reduced-motion preference */
 @media (prefers-reduced-motion: reduce) {
-  .movie-card-poster {
+  .movie-card-poster,
+  .movie-card-watchlist {
     transition: none;
   }
 }

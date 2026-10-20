@@ -1,12 +1,19 @@
 import { Link } from 'react-router'
 import './MovieCard.css'
 
-function MovieCard({ movie }) {
+function MovieCard({ movie, watchlist, onToggleWatchlist }) {
+  const isInWatchlist = watchlist.some(
+    savedMovie => savedMovie.id === movie.id
+  )
   const year = movie.release_date?.slice(0, 4) || 'Unknown year'
 
   const rating = Number.isFinite(movie.vote_average)
     ? movie.vote_average.toFixed(1)
     : 'N/A'
+
+  function handleWatchlist() {
+  onToggleWatchlist(movie)
+  }
 
   return (
     <article className="movie-card">
@@ -15,7 +22,6 @@ function MovieCard({ movie }) {
         to={`/movie/${movie.id}`}
         aria-label={`View details for ${movie.title}`}
       >
-        {/* Movie poster */}
         {movie.poster_path ? (
           <img
             className="movie-card-poster"
@@ -29,11 +35,9 @@ function MovieCard({ movie }) {
           </div>
         )}
 
-        {/* Movie title */}
         <h3>{movie.title}</h3>
       </Link>
 
-      {/* Release year and rating */}
       <p className="movie-card-meta">
         <span>{year}</span>
 
@@ -41,6 +45,16 @@ function MovieCard({ movie }) {
           <span aria-hidden="true">★</span> {rating}
         </span>
       </p>
+
+      <button
+        className="movie-card-watchlist"
+        type="button"
+        onClick={handleWatchlist}
+      >
+        {isInWatchlist
+          ? '− Remove'
+          : '+ Add'}
+      </button>
     </article>
   )
 }

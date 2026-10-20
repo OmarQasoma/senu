@@ -1,9 +1,26 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useOutletContext, useSearchParams } from 'react-router'
+
 import Hero from '../components/Hero.jsx'
 import MovieCard from '../components/MovieCard.jsx'
+import GenreButtons from '../components/GenreButtons.jsx'
+
+
+import {
+  getPopularMovies,
+  searchMovies,
+  getMoviesByGenre,
+} from '../services/movieApi.js'
+
 import './Home.css'
 
 function Home() {
+
+  const { watchlist, onToggleWatchlist } = useOutletContext()
+
+  const [searchParams] = useSearchParams()
+  const searchQuery = searchParams.get('search')?.trim() || ''
+
   const [movies, setMovies] = useState([])
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
@@ -11,18 +28,38 @@ function Home() {
   const [totalPages, setTotalPages] = useState(1)
   const [retryCount, setRetryCount] = useState(0)
 
+  const [selectedGenre, setSelectedGenre] = useState('')
+  const activeRequestKeyRef = useRef(`${searchQuery}:${selectedGenre}`)
+
   useEffect(() => {
     let active = true
 
     async function getMovies() {
-      try {
-        const response = await fetch(`/api/tmdb/movie/popular?page=${page}`)
+      const requestKey = `${searchQuery}:${selectedGenre}`
 
-        if (!response.ok) {
-          throw new Error('HTTP ' + response.status)
+      if (activeRequestKeyRef.current !== requestKey) {
+        activeRequestKeyRef.current = requestKey
+        setMovies([])
+        setTotalPages(1)
+        setError('')
+        setLoading(true)
+
+        if (page !== 1) {
+          setPage(1)
+          return
         }
+      }
 
-        const data = await response.json()
+      try {
+        let data
+
+        if (searchQuery) {
+          data = await searchMovies(searchQuery, page)
+        } else if (selectedGenre) {
+          data = await getMoviesByGenre(selectedGenre, page)
+        } else {
+          data = await getPopularMovies(page)
+        }
 
         if (
           !data ||
@@ -35,12 +72,20 @@ function Home() {
 
         if (active) {
           setMovies(previousMovies => {
-            const newMovies = data.results.filter(movie => (
-              !previousMovies.some(savedMovie => savedMovie.id === movie.id)
-            ))
+            const newMovies = data.results.filter(
+              movie =>
+                !previousMovies.some(
+                  savedMovie => savedMovie.id === movie.id
+                )
+            )
+
+            if (page === 1) {
+              return newMovies
+            }
 
             return [...previousMovies, ...newMovies]
           })
+
           setTotalPages(Math.min(data.total_pages, 500))
         }
       } catch (err) {
@@ -59,7 +104,11 @@ function Home() {
     return () => {
       active = false
     }
-  }, [page, retryCount])
+  }, [page, retryCount, searchQuery, selectedGenre])
+
+  function handleGenreChange(genreId) {
+    setSelectedGenre(genreId)
+  }
 
   function handleLoadMore() {
     if (loading) return
@@ -76,20 +125,52 @@ function Home() {
 
   return (
     <main>
-      <Hero movie={movies[0]} />
+      <Hero
+         movie={movies[0]}
+         watchlist={watchlist}
+         onToggleWatchlist={onToggleWatchlist}
+        />
 
       <section className="home-movies" id="movies">
-        <h2>Popular Movies</h2>
 
-        {loading && <p role="status">Loading movies...</p>}
-        {error && <p role="alert">{error}</p>}
+        <div className="movies-header">
+          <h2>
+            {searchQuery
+              ? `Search results for "${searchQuery}"`
+              : selectedGenre
+                ? 'Movies by Genre'
+                : 'Popular Movies'}
+          </h2>
+
+          {!searchQuery && (
+            <GenreButtons
+              selectedGenre={selectedGenre}
+              onSelectGenre={handleGenreChange}
+            />
+          )}
+        </div>
+
+        {loading && (
+          <p role="status">Loading movies...</p>
+        )}
+
+        {error && (
+          <p role="alert">{error}</p>
+        )}
+
         {!loading && !error && movies.length === 0 && (
-          <p>No movies available.</p>
+          <p>No movies found.</p>
         )}
 
         <div className="movie-grid">
           {movies.map(movie => (
-            <MovieCard key={movie.id} movie={movie} />
+            <MovieCard
+              key={movie.id}
+              movie={movie}
+              watchlist={watchlist}
+              onToggleWatchlist={onToggleWatchlist}
+              />
+
           ))}
         </div>
 
@@ -101,10 +182,15 @@ function Home() {
               onClick={handleLoadMore}
               disabled={loading}
             >
-              {loading ? 'Loading...' : error ? 'Try again' : 'Load More'}
+              {loading
+                ? 'Loading...'
+                : error
+                  ? 'Try again'
+                  : 'Load More'}
             </button>
           </div>
         )}
+
       </section>
     </main>
   )

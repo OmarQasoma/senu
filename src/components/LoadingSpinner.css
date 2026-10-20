@@ -1,0 +1,34 @@
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 0;
+  color: #b7bfce;
+}
+
+.loading-spinner p {
+  margin: 0;
+}
+
+.loading-spinner-circle {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border: 3px solid #2b3445;
+  border-top-color: #77dce9;
+  border-radius: 50%;
+  animation: senuSpinnerRotate 800ms linear infinite;
+}
+
+@keyframes senuSpinnerRotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner-circle {
+    animation: none;
+  }
+}
