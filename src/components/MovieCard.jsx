@@ -1,11 +1,10 @@
 import { Link } from 'react-router'
-import useWatchlist from '../hooks/useWatchlist.js'
-import { toggleWatchlist } from '../storage/localStorage.js'
 import './MovieCard.css'
 
-function MovieCard({ movie, onWatchlistChange }) {
-  const isInWatchlist = useWatchlist(movie.id)
-
+function MovieCard({ movie, watchlist, onToggleWatchlist }) {
+  const isInWatchlist = watchlist.some(
+    savedMovie => savedMovie.id === movie.id
+  )
   const year = movie.release_date?.slice(0, 4) || 'Unknown year'
 
   const rating = Number.isFinite(movie.vote_average)
@@ -13,8 +12,7 @@ function MovieCard({ movie, onWatchlistChange }) {
     : 'N/A'
 
   function handleWatchlist() {
-    toggleWatchlist(movie)
-    onWatchlistChange && onWatchlistChange()
+  onToggleWatchlist(movie)
   }
 
   return (

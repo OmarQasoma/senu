@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router'
+import { useOutletContext, useSearchParams } from 'react-router'
 
 import Hero from '../components/Hero.jsx'
 import MovieCard from '../components/MovieCard.jsx'
 import GenreButtons from '../components/GenreButtons.jsx'
+
 
 import {
   getPopularMovies,
@@ -14,6 +15,9 @@ import {
 import './Home.css'
 
 function Home() {
+
+  const { watchlist, onToggleWatchlist } = useOutletContext()
+
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get('search')?.trim() || ''
 
@@ -121,7 +125,11 @@ function Home() {
 
   return (
     <main>
-      <Hero movie={movies[0]} />
+      <Hero
+         movie={movies[0]}
+         watchlist={watchlist}
+         onToggleWatchlist={onToggleWatchlist}
+        />
 
       <section className="home-movies" id="movies">
 
@@ -159,7 +167,10 @@ function Home() {
             <MovieCard
               key={movie.id}
               movie={movie}
-            />
+              watchlist={watchlist}
+              onToggleWatchlist={onToggleWatchlist}
+              />
+
           ))}
         </div>
 

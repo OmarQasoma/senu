@@ -1,18 +1,18 @@
 import { Link } from 'react-router'
-import useWatchlist from '../hooks/useWatchlist.js'
-import { toggleWatchlist } from '../storage/localStorage.js'
 import './Hero.css'
 
-function Hero({ movie }) {
-  const isInWatchlist = useWatchlist(movie?.id)
-
+function Hero({ movie, watchlist, onToggleWatchlist }) {
   if (!movie) return null
+
+  const isInWatchlist = watchlist.some(
+    savedMovie => savedMovie.id === movie.id
+  )
 
   const year = movie.release_date?.slice(0, 4)
 
   const rating = Number.isFinite(movie.vote_average)
     ? movie.vote_average.toFixed(1)
-    : 'N/A'
+    : 'N/A' 
 
   const backgroundStyle = movie.backdrop_path
     ? {
@@ -25,7 +25,7 @@ function Hero({ movie }) {
     : undefined
 
   function handleWatchlist() {
-    toggleWatchlist(movie)
+    onToggleWatchlist(movie)
   }
 
   return (
