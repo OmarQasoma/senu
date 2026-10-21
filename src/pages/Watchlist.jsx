@@ -1,3 +1,4 @@
+
 import { useOutletContext } from 'react-router'
 import MovieCard from '../components/MovieCard.jsx'
 

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react'
 import { useOutletContext, useSearchParams } from 'react-router'
 
@@ -14,104 +15,59 @@ import {
 import './Home.css'
 
 function Home() {
-  const [searchParams] = useSearchParams()
-  const searchQuery = searchParams.get('search')?.trim() || ''
-  const [selectedGenre, setSelectedGenre] = useState('')
-
-  // A new search or genre starts the movie list again from page 1.
-  return (
-    <HomeContent
-      key={`${searchQuery}:${selectedGenre}`}
-      searchQuery={searchQuery}
-      selectedGenre={selectedGenre}
-      onGenreChange={setSelectedGenre}
-    />
-  )
-}
-
-function HomeContent({ searchQuery, selectedGenre, onGenreChange }) {
   const { watchlist, onToggleWatchlist } = useOutletContext()
 
-  const [movies, setMovies] = useState([])
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [retryCount, setRetryCount] = useState(0)
+  const [searchParams] = useSearchParams()
+  const searchMovie = searchParams.get('search') || ''
+
+  const [movies, updateMovies] = useState([])
+  const [selectedGenre, updateSelectedGenre] = useState('')
+  const [loading, updateLoading] = useState(true)
+  const [error, updateError] = useState('')
 
   useEffect(() => {
     let active = true
 
-    async function getMovies() {
-      setLoading(true)
-      setError('')
+    async function loadMovies() {
+      updateLoading(true)
+      updateError ('')
+      updateMovies([])
 
       try {
         let data
 
-        if (searchQuery) {
-          data = await searchMovies(searchQuery, page)
+        if (searchMovie) {
+          data = await searchMovies(searchMovie, 1)
         } else if (selectedGenre) {
-          data = await getMoviesByGenre(selectedGenre, page)
+          data = await getMoviesByGenre(selectedGenre, 1)
         } else {
-          data = await getPopularMovies(page)
+          data = await getPopularMovies(1)
         }
 
-        if (
-          !data ||
-          !Array.isArray(data.results) ||
-          !Number.isInteger(data.total_pages) ||
-          data.total_pages < 0
-        ) {
-          throw new Error('Could not load movies. Please try again.')
+        if (!data || !Array.isArray(data.results)) {
+          throw new Error('Invalid movie data')
         }
 
         if (active) {
-          setMovies(previousMovies => {
-            if (page === 1) return data.results
-
-            const newMovies = data.results.filter(
-              movie =>
-                !previousMovies.some(
-                  savedMovie => savedMovie.id === movie.id
-                )
-            )
-
-            return [...previousMovies, ...newMovies]
-          })
-
-          setTotalPages(Math.min(data.total_pages, 500))
+          updateMovies(data.results)
         }
-      } catch (err) {
+      } catch {
         if (active) {
-          setError(err.message)
+          updateError('Could not load movies. Please try again.')
         }
       } finally {
         if (active) {
-          setLoading(false)
+          updateLoading(false)
         }
       }
     }
 
-    getMovies()
+    loadMovies()
 
     return () => {
       active = false
     }
-  }, [page, retryCount, searchQuery, selectedGenre])
-
-  function handleLoadMore() {
-    if (loading) return
-
-    setLoading(true)
-
-    if (error) {
-      setError('')
-      setRetryCount(previousCount => previousCount + 1)
-    } else {
-      setPage(previousPage => previousPage + 1)
-    }
-  }
+  }, [searchMovie, selectedGenre])
 
   return (
     <main>
@@ -122,31 +78,26 @@ function HomeContent({ searchQuery, selectedGenre, onGenreChange }) {
       />
 
       <section className="home-movies" id="movies">
-
         <div className="movies-header">
           <h2>
-            {searchQuery
-              ? `Search results for "${searchQuery}"`
+            {searchMovie
+              ? `Search results for "${searchMovie}"`
               : selectedGenre
                 ? 'Movies by Genre'
                 : 'Popular Movies'}
           </h2>
 
-          {!searchQuery && (
+          {!searchMovie && (
             <GenreButtons
               selectedGenre={selectedGenre}
-              onSelectGenre={onGenreChange}
+              onSelectGenre={updateSelectedGenre}
             />
           )}
         </div>
 
-        {loading && (
-          <p role="status">Loading movies...</p>
-        )}
+        {loading && <p>Loading movies...</p>}
 
-        {error && (
-          <p role="alert">{error}</p>
-        )}
+        {error && <p role="alert">{error}</p>}
 
         {!loading && !error && movies.length === 0 && (
           <p>No movies found.</p>
@@ -162,24 +113,6 @@ function HomeContent({ searchQuery, selectedGenre, onGenreChange }) {
             />
           ))}
         </div>
-
-        {(loading || error || page < totalPages) && (
-          <div className="home-movies-actions">
-            <button
-              className="load-more-button"
-              type="button"
-              onClick={handleLoadMore}
-              disabled={loading}
-            >
-              {loading
-                ? 'Loading...'
-                : error
-                  ? 'Try again'
-                  : 'Load More'}
-            </button>
-          </div>
-        )}
-
       </section>
     </main>
   )

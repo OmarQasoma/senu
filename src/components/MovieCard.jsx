@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 import './MovieCard.css'
 
-function MovieCard({ movie, watchlist, onToggleWatchlist }) {
+function MovieCard({ movie, watchlist,onToggleWatchlist}) {
   const isInWatchlist = watchlist.some(
     savedMovie => savedMovie.id === movie.id
   )
@@ -11,9 +11,7 @@ function MovieCard({ movie, watchlist, onToggleWatchlist }) {
     ? movie.vote_average.toFixed(1)
     : 'N/A'
 
-  function handleWatchlist() {
-  onToggleWatchlist(movie)
-  }
+ 
 
   return (
     <article className="movie-card">
@@ -49,7 +47,7 @@ function MovieCard({ movie, watchlist, onToggleWatchlist }) {
       <button
         className="movie-card-watchlist"
         type="button"
-        onClick={handleWatchlist}
+        onClick={() => onToggleWatchlist(movie)}
       >
         {isInWatchlist
           ? '− Remove'

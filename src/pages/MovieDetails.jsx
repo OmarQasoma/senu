@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router'
 
@@ -6,55 +7,49 @@ import './MovieDetails.css'
 
 function MovieDetails() {
   const { movieId } = useParams()
-  const [movie, setMovie] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+
+  const [movie, updateMovie] = useState(null)
+  const [loading, updateLoading] = useState(true)
+  const [error, updateError] = useState('')
 
   useEffect(() => {
     let active = true
 
-    async function getMovie() {
-      setMovie(null)
-      setLoading(true)
-      setError('')
+    async function loadMovie() {
+      updateLoading(true)
+      updateError('')
+      updateMovie(null)
 
       try {
         const data = await getMovieDetails(movieId)
 
-        if (
-          !data ||
-          !Number.isInteger(data.id) ||
-          data.id !== Number(movieId) ||
-          typeof data.title !== 'string' ||
-          !data.title.trim()
-        ) {
-          throw new Error('The movie data is not valid.')
+        if (!data?.title || data.id !== Number(movieId)) {
+          throw new Error('Invalid movie data')
         }
 
         if (active) {
-          setMovie(data)
+          updateMovie(data)
         }
       } catch {
         if (active) {
-          setError('Could not load this movie. Please try again.')
+          updateError('Could not load this movie. Please try again.')
         }
       } finally {
         if (active) {
-          setLoading(false)
+          updateLoading(false)
         }
       }
     }
 
-    getMovie()
+    loadMovie()
 
     return () => {
       active = false
     }
   }, [movieId])
 
-  const year = typeof movie?.release_date === 'string'
-    ? movie.release_date.slice(0, 4) || 'Unknown year'
-    : 'Unknown year'
+  const year = movie?.release_date?.slice(0, 4) || 'Unknown year'
+
   const rating = Number.isFinite(movie?.vote_average)
     ? movie.vote_average.toFixed(1)
     : 'N/A'
@@ -79,7 +74,7 @@ function MovieDetails() {
 
       {!loading && !error && movie && (
         <article className="movie-details-content">
-          {typeof movie.poster_path === 'string' && movie.poster_path ? (
+          {movie.poster_path ? (
             <img
               className="movie-details-poster"
               src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
@@ -96,19 +91,20 @@ function MovieDetails() {
 
             <p className="movie-details-meta">
               <span>{year}</span>
+
               <span className="movie-details-rating">
                 <span aria-hidden="true">★</span> {rating}
               </span>
-              {Number.isFinite(movie.runtime) && movie.runtime > 0 && (
+
+              {movie.runtime > 0 && (
                 <span>{movie.runtime} min</span>
               )}
             </p>
 
             <h2>Overview</h2>
+
             <p className="movie-details-overview">
-              {typeof movie.overview === 'string' && movie.overview.trim()
-                ? movie.overview
-                : 'No overview available.'}
+              {movie.overview?.trim() || 'No overview available.'}
             </p>
           </div>
         </article>

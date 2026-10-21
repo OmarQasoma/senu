@@ -2,19 +2,24 @@ import { useState } from 'react'
 import { Outlet } from 'react-router'
 import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
+
 import {
   getWatchlist,
   toggleWatchlist,
 } from './storage/localStorage.js'
 
+
+
 function App() {
-  const [watchlist, setWatchlist] = useState(() => getWatchlist())
+  const [watchlist, updateWatchlist] = useState(() => getWatchlist())
 
   function handleToggleWatchlist(movie) {
     const updatedWatchlist = toggleWatchlist(movie)
-    setWatchlist(updatedWatchlist)
+    updateWatchlist(updatedWatchlist)
   }
 
+
+  
   return (
     <>
       <Navbar />
