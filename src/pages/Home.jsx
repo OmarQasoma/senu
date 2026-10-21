@@ -73,7 +73,7 @@ function Home() {
       <Hero
         movie={movies[0]}
         watchlist={watchlist}
-        onToggleWatchlist={onToggleWatchlist}
+        onToggleWatchlist={changeWatchlist}
       />
 
       <section className="home-movies" id="movies">
