@@ -1,25 +1,4 @@
 const WATCHLIST_KEY = 'senu-watchlist'
-const watchlistListeners = new Set()
-
-export function subscribeWatchlist(listener) {
-  watchlistListeners.add(listener)
-
-  function handleStorage(event) {
-    if (
-      event.storageArea === localStorage &&
-      (event.key === WATCHLIST_KEY || event.key === null)
-    ) {
-      listener()
-    }
-  }
-
-  window.addEventListener('storage', handleStorage)
-
-  return () => {
-    watchlistListeners.delete(listener)
-    window.removeEventListener('storage', handleStorage)
-  }
-}
 
 export function getWatchlist() {
   try {
@@ -39,6 +18,7 @@ export function getWatchlist() {
 
 export function toggleWatchlist(movie) {
   const savedWatchlist = getWatchlist()
+
   const movieExists = savedWatchlist.some(
     savedMovie => savedMovie.id === movie.id
   )
@@ -51,8 +31,6 @@ export function toggleWatchlist(movie) {
     WATCHLIST_KEY,
     JSON.stringify(updatedWatchlist)
   )
-
-  watchlistListeners.forEach(listener => listener())
 
   return updatedWatchlist
 }

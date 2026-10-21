@@ -1,55 +1,37 @@
-export async function getPopularMovies(page = 1) {
-  const response = await fetch(`/api/tmdb/movie/popular?page=${page}`)
+async function fetchFromTmdb(path, errorMessage) {
+  const response = await fetch(`/api/tmdb${path}`)
 
   if (!response.ok) {
-    throw new Error('HTTP ' + response.status)
+    throw new Error(errorMessage)
   }
 
-  const data = await response.json()
+  return response.json()
+}
 
-  return data
+export async function getPopularMovies(page = 1) {
+  return fetchFromTmdb(
+    `/movie/popular?page=${page}`,
+    'Could not load movies. Please try again.'
+  )
 }
 
 export async function getMovieDetails(movieId) {
-  const response = await fetch(`/api/tmdb/movie/${movieId}`)
-
-  if (!response.ok) {
-    throw new Error('Could not load this movie. Please try again.')
-  }
-
-  const data = await response.json()
-
-  return data
+  return fetchFromTmdb(
+    `/movie/${movieId}`,
+    'Could not load this movie. Please try again.'
+  )
 }
-
-
-// for grenre buttons
 
 export async function getMoviesByGenre(genreId, page = 1) {
-  const response = await fetch(
-    `/api/tmdb/discover/movie?with_genres=${genreId}&page=${page}`
+  return fetchFromTmdb(
+    `/discover/movie?with_genres=${genreId}&page=${page}`,
+    'Could not load movies for this genre. Please try again.'
   )
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch movies by genre')
-  }
-
-  const data = await response.json()
-
-  return data
 }
 
-// for searchMovie 
 export async function searchMovies(query, page = 1) {
-  const response = await fetch(
-    `/api/tmdb/search/movie?query=${encodeURIComponent(query)}&page=${page}`
+  return fetchFromTmdb(
+    `/search/movie?query=${encodeURIComponent(query)}&page=${page}`,
+    'Could not search movies. Please try again.'
   )
-
-  if (!response.ok) {
-    throw new Error('Failed to search movies')
-  }
-
-  const data = await response.json()
-
-  return data
 }

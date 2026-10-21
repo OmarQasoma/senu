@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useOutletContext, useSearchParams } from 'react-router'
 
 import Hero from '../components/Hero.jsx'
 import MovieCard from '../components/MovieCard.jsx'
 import GenreButtons from '../components/GenreButtons.jsx'
-
 
 import {
   getPopularMovies,
@@ -15,11 +14,23 @@ import {
 import './Home.css'
 
 function Home() {
-
-  const { watchlist, onToggleWatchlist } = useOutletContext()
-
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get('search')?.trim() || ''
+  const [selectedGenre, setSelectedGenre] = useState('')
+
+  // A new search or genre starts the movie list again from page 1.
+  return (
+    <HomeContent
+      key={`${searchQuery}:${selectedGenre}`}
+      searchQuery={searchQuery}
+      selectedGenre={selectedGenre}
+      onGenreChange={setSelectedGenre}
+    />
+  )
+}
+
+function HomeContent({ searchQuery, selectedGenre, onGenreChange }) {
+  const { watchlist, onToggleWatchlist } = useOutletContext()
 
   const [movies, setMovies] = useState([])
   const [error, setError] = useState('')
@@ -28,27 +39,12 @@ function Home() {
   const [totalPages, setTotalPages] = useState(1)
   const [retryCount, setRetryCount] = useState(0)
 
-  const [selectedGenre, setSelectedGenre] = useState('')
-  const activeRequestKeyRef = useRef(`${searchQuery}:${selectedGenre}`)
-
   useEffect(() => {
     let active = true
 
     async function getMovies() {
-      const requestKey = `${searchQuery}:${selectedGenre}`
-
-      if (activeRequestKeyRef.current !== requestKey) {
-        activeRequestKeyRef.current = requestKey
-        setMovies([])
-        setTotalPages(1)
-        setError('')
-        setLoading(true)
-
-        if (page !== 1) {
-          setPage(1)
-          return
-        }
-      }
+      setLoading(true)
+      setError('')
 
       try {
         let data
@@ -67,21 +63,19 @@ function Home() {
           !Number.isInteger(data.total_pages) ||
           data.total_pages < 0
         ) {
-          throw new Error('Invalid movie data.')
+          throw new Error('Could not load movies. Please try again.')
         }
 
         if (active) {
           setMovies(previousMovies => {
+            if (page === 1) return data.results
+
             const newMovies = data.results.filter(
               movie =>
                 !previousMovies.some(
                   savedMovie => savedMovie.id === movie.id
                 )
             )
-
-            if (page === 1) {
-              return newMovies
-            }
 
             return [...previousMovies, ...newMovies]
           })
@@ -106,10 +100,6 @@ function Home() {
     }
   }, [page, retryCount, searchQuery, selectedGenre])
 
-  function handleGenreChange(genreId) {
-    setSelectedGenre(genreId)
-  }
-
   function handleLoadMore() {
     if (loading) return
 
@@ -126,10 +116,10 @@ function Home() {
   return (
     <main>
       <Hero
-         movie={movies[0]}
-         watchlist={watchlist}
-         onToggleWatchlist={onToggleWatchlist}
-        />
+        movie={movies[0]}
+        watchlist={watchlist}
+        onToggleWatchlist={onToggleWatchlist}
+      />
 
       <section className="home-movies" id="movies">
 
@@ -145,7 +135,7 @@ function Home() {
           {!searchQuery && (
             <GenreButtons
               selectedGenre={selectedGenre}
-              onSelectGenre={handleGenreChange}
+              onSelectGenre={onGenreChange}
             />
           )}
         </div>
@@ -169,8 +159,7 @@ function Home() {
               movie={movie}
               watchlist={watchlist}
               onToggleWatchlist={onToggleWatchlist}
-              />
-
+            />
           ))}
         </div>
 

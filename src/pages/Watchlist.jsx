@@ -1,5 +1,5 @@
 import { useOutletContext } from 'react-router'
-import MovieCard from './MovieCard.jsx'
+import MovieCard from '../components/MovieCard.jsx'
 
 function Watchlist() {
   const { watchlist, onToggleWatchlist } = useOutletContext()
