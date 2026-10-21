@@ -15,8 +15,7 @@ import {
 import './Home.css'
 
 function Home() {
-  const { watchlist, onToggleWatchlist } = useOutletContext()
-
+  const { watchlist, changeWatchlist } = useOutletContext()
   const [searchParams] = useSearchParams()
   const searchMovie = searchParams.get('search') || ''
 
@@ -106,11 +105,12 @@ function Home() {
         <div className="movie-grid">
           {movies.map(movie => (
             <MovieCard
-              key={movie.id}
-              movie={movie}
-              watchlist={watchlist}
-              onToggleWatchlist={onToggleWatchlist}
-            />
+            key={movie.id}
+           movie={movie}
+           watchlist={watchlist}
+           onToggleWatchlist={changeWatchlist}
+           />
+            
           ))}
         </div>
       </section>

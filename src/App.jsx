@@ -24,12 +24,9 @@ function App() {
     <>
       <Navbar />
 
-      <Outlet
-        context={{
-          watchlist,
-          onToggleWatchlist: handleToggleWatchlist,
-        }}
-      />
+      <Outlet context={{ watchlist, changeWatchlist: handleToggleWatchlist,
+  }}
+/>
 
       <Footer />
     </>

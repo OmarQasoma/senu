@@ -4,7 +4,7 @@ import senuLogo from '../assets/senu-logo.png'
 import './Navbar.css'
 
 function Navbar() {
-  const [query, setQuery] = useState('')
+  const [query, updateQueryInSearch] = useState('')
   const navigate = useNavigate()
 
   function handleSearch(event) {
@@ -76,7 +76,7 @@ function Navbar() {
               aria-label="Search movies"
               value={query}
               onChange={event =>
-                setQuery(event.target.value)
+                updateQueryInSearch(event.target.value)
               }
             />
           </form>

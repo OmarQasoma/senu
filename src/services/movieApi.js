@@ -1,13 +1,35 @@
+
+ // Fetch data from TMDb API
 async function fetchFromTmdb(path, errorMessage) {
   const response = await fetch(`/api/tmdb${path}`)
 
+  // Check if the API request failed
   if (!response.ok) {
     throw new Error(errorMessage)
   }
 
-  return response.json()
+  // Convert the API response to JavaScript data
+  const data = await response.json()
+
+  // Show the API data in the browser console
+  console.log('API request:', path)
+
+  if (Array.isArray(data.results)) {
+    console.table(
+      data.results.map(movie => ({
+        id: movie.id,
+        title: movie.title
+      }))
+    )
+  } else {
+    console.log('Movie ID:', data.id)
+    console.log('Movie title:', data.title)
+  }
+
+  return data
 }
 
+// Get a list of popular movies
 export async function getPopularMovies(page = 1) {
   return fetchFromTmdb(
     `/movie/popular?page=${page}`,
@@ -15,6 +37,7 @@ export async function getPopularMovies(page = 1) {
   )
 }
 
+// Get details for one movie using its ID
 export async function getMovieDetails(movieId) {
   return fetchFromTmdb(
     `/movie/${movieId}`,
@@ -22,6 +45,7 @@ export async function getMovieDetails(movieId) {
   )
 }
 
+// Get movies filtered by genre
 export async function getMoviesByGenre(genreId, page = 1) {
   return fetchFromTmdb(
     `/discover/movie?with_genres=${genreId}&page=${page}`,
@@ -29,6 +53,7 @@ export async function getMoviesByGenre(genreId, page = 1) {
   )
 }
 
+// Search movies by title
 export async function searchMovies(query, page = 1) {
   return fetchFromTmdb(
     `/search/movie?query=${encodeURIComponent(query)}&page=${page}`,
