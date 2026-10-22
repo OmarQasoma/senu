@@ -106,6 +106,19 @@ function MovieDetails() {
             <p className="movie-details-overview">
               {movie.overview?.trim() || 'No overview available.'}
             </p>
+
+            <p>
+             Genres: {movie.genres?.map(genre => genre.name).join(', ') || 'N/A'}
+            </p>
+             
+           <p>
+           Status: {movie.status || 'N/A'}
+           </p>
+
+           <p>
+           Original Language: {movie.original_language || 'N/A'}
+           </p>
+
           </div>
         </article>
       )}
