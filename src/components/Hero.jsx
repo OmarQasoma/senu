@@ -4,7 +4,7 @@ import './Hero.css'
 function Hero({ movie, watchlist, onToggleWatchlist }) {
   if (!movie) return null
 
-  const isInWatchlist = watchlist.some(
+  const isInWatchlist = watchlist.some( // SOME METHOD CHECKS IF MOVIE IS IN WATCHLIST
     savedMovie => savedMovie.id === movie.id
   )
 
@@ -17,7 +17,7 @@ function Hero({ movie, watchlist, onToggleWatchlist }) {
   const backgroundStyle = movie.backdrop_path
     ? {
         backgroundImage: `
-          linear-gradient(90deg, #0b0d14, rgba(11, 13, 20, 0.3)),
+          linear-gradient(90deg, #2d2f34, rgba(38, 44, 67, 0.3)),
           linear-gradient(0deg, #0b0d14, transparent 70%),
           url("https://image.tmdb.org/t/p/w1280${movie.backdrop_path}")
         `,
@@ -60,7 +60,9 @@ function Hero({ movie, watchlist, onToggleWatchlist }) {
             View Details
           </Link>
 
-          <button
+          
+           
+          <button // add and remove movies from watchlist
             className="hero-button hero-button-secondary"
             type="button"
             onClick={handleWatchlist}

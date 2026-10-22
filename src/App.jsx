@@ -13,7 +13,8 @@ import {
 function App() {
   const [watchlist, updateWatchlist] = useState(() => getWatchlist())
 
-  function handleToggleWatchlist(movie) {
+  
+  function handleToggleWatchlist(movie) { // add/remove logic ,MovieCard and Hero use the same watchlist .
     const updatedWatchlist = toggleWatchlist(movie)
     updateWatchlist(updatedWatchlist)
   }

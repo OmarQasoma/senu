@@ -86,7 +86,7 @@ function Home() {
                 : 'Popular Movies'}
           </h2>
 
-          {!searchMovie && (
+          {!searchMovie && ( // && SHOW BUTTONS IF NOT SEARCHING
             <GenreButtons
               selectedGenre={selectedGenre}
               onSelectGenre={updateSelectedGenre}
