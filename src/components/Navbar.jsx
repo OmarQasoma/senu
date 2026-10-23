@@ -72,8 +72,8 @@ function Navbar() {
 
             <input
               type="search"
-              placeholder="Search movies..."
-              aria-label="Search movies"
+              placeholder="Search movies or TV..."
+              aria-label="Search movies or TV shows"
               value={query}
               onChange={event =>
                 setQuery(event.target.value)

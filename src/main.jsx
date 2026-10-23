@@ -23,6 +23,10 @@ const router = createHashRouter([
         Component: MovieDetails,
       },
       {
+        path: 'tv/:movieId',
+        Component: MovieDetails,
+      },
+      {
         path: 'watchlist',  
         Component: Watchlist,
       },

@@ -1,14 +1,19 @@
 import { Link } from 'react-router'
 import './Hero.css'
 
-function Hero({ movie, watchlist, onToggleWatchlist }) {
+function Hero({ movie, mediaType = 'movie', watchlist, onToggleWatchlist }) {
   if (!movie) return null
 
   const isInWatchlist = watchlist.some(
-    savedMovie => savedMovie.id === movie.id
+    savedMovie => (
+      savedMovie.id === movie.id &&
+      (savedMovie.media_type || 'movie') === mediaType
+    )
   )
 
-  const year = movie.release_date?.slice(0, 4)
+  const title = mediaType === 'tv' ? movie.name : movie.title
+  const date = mediaType === 'tv' ? movie.first_air_date : movie.release_date
+  const year = date?.slice(0, 4)
 
   const rating = Number.isFinite(movie.vote_average)
     ? movie.vote_average.toFixed(1)
@@ -25,7 +30,7 @@ function Hero({ movie, watchlist, onToggleWatchlist }) {
     : undefined
 
   function handleWatchlist() {
-    onToggleWatchlist(movie)
+    onToggleWatchlist({ ...movie, media_type: mediaType })
   }
 
   return (
@@ -37,7 +42,7 @@ function Hero({ movie, watchlist, onToggleWatchlist }) {
       <div className="hero-content">
         <p className="hero-label">Featured Tonight</p>
 
-        <h1 id="hero-title">{movie.title}</h1>
+        <h1 id="hero-title">{title}</h1>
 
         <ul className="hero-meta" aria-label="Movie information">
           <li className="hero-rating">
@@ -54,7 +59,7 @@ function Hero({ movie, watchlist, onToggleWatchlist }) {
         <div className="hero-actions">
           <Link
             className="hero-button hero-button-primary"
-            to={`/movie/${movie.id}`}
+            to={`/${mediaType}/${movie.id}`}
           >
             <span aria-hidden="true">↗</span>
             View Details

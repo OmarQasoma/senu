@@ -1,26 +1,31 @@
 import { Link } from 'react-router'
 import './MovieCard.css'
 
-function MovieCard({ movie, watchlist, onToggleWatchlist }) {
+function MovieCard({ movie, mediaType = 'movie', watchlist, onToggleWatchlist }) {
   const isInWatchlist = watchlist.some(
-    savedMovie => savedMovie.id === movie.id
+    savedMovie => (
+      savedMovie.id === movie.id &&
+      (savedMovie.media_type || 'movie') === mediaType
+    )
   )
-  const year = movie.release_date?.slice(0, 4) || 'Unknown year'
+  const title = mediaType === 'tv' ? movie.name : movie.title
+  const date = mediaType === 'tv' ? movie.first_air_date : movie.release_date
+  const year = date?.slice(0, 4) || 'Unknown year'
 
   const rating = Number.isFinite(movie.vote_average)
     ? movie.vote_average.toFixed(1)
     : 'N/A'
 
   function handleWatchlist() {
-  onToggleWatchlist(movie)
+    onToggleWatchlist({ ...movie, media_type: mediaType })
   }
 
   return (
     <article className="movie-card">
       <Link
         className="movie-card-link"
-        to={`/movie/${movie.id}`}
-        aria-label={`View details for ${movie.title}`}
+        to={`/${mediaType}/${movie.id}`}
+        aria-label={`View details for ${title}`}
       >
         {movie.poster_path ? (
           <img
@@ -35,7 +40,7 @@ function MovieCard({ movie, watchlist, onToggleWatchlist }) {
           </div>
         )}
 
-        <h3>{movie.title}</h3>
+        <h3>{title}</h3>
       </Link>
 
       <p className="movie-card-meta">

@@ -4,11 +4,17 @@ import { useOutletContext, useSearchParams } from 'react-router'
 import Hero from '../components/Hero.jsx'
 import MovieCard from '../components/MovieCard.jsx'
 import GenreButtons from '../components/GenreButtons.jsx'
+import ProviderSelector from '../components/ProviderSelector.jsx'
 
 import {
   getPopularMovies,
+  getPopularTvShows,
   searchMovies,
+  searchTvShows,
   getMoviesByGenre,
+  getTvShowsByGenre,
+  discoverByWatchProvider,
+  discoverByOriginalLanguage,
 } from '../services/movieApi.js'
 
 import './Home.css'
@@ -17,19 +23,48 @@ function Home() {
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get('search')?.trim() || ''
   const [selectedGenre, setSelectedGenre] = useState('')
+  const [mediaType, setMediaType] = useState('movie')
+  const [selectedProvider, setSelectedProvider] = useState('')
+  const [originalLanguage, setOriginalLanguage] = useState('')
 
   // A new search or genre starts the movie list again from page 1.
   return (
     <HomeContent
-      key={`${searchQuery}:${selectedGenre}`}
+      key={`${searchQuery}:${selectedGenre}:${mediaType}:${originalLanguage}`}
       searchQuery={searchQuery}
       selectedGenre={selectedGenre}
-      onGenreChange={setSelectedGenre}
+      mediaType={mediaType}
+      selectedProvider={selectedProvider}
+      originalLanguage={originalLanguage}
+      onGenreChange={genre => {
+        setSelectedGenre(genre)
+      }}
+      onMediaTypeChange={type => {
+        setSelectedGenre('')
+        setSelectedProvider('')
+        setMediaType(type)
+      }}
+      onProviderChange={providerId => {
+        setSelectedProvider(providerId)
+      }}
+      onLanguageChange={() => {
+        setOriginalLanguage(language => language === 'ar' ? '' : 'ar')
+      }}
     />
   )
 }
 
-function HomeContent({ searchQuery, selectedGenre, onGenreChange }) {
+function HomeContent({
+  searchQuery,
+  selectedGenre,
+  mediaType,
+  selectedProvider,
+  originalLanguage,
+  onGenreChange,
+  onMediaTypeChange,
+  onProviderChange,
+  onLanguageChange,
+}) {
   const { watchlist, onToggleWatchlist } = useOutletContext()
 
   const [movies, setMovies] = useState([])
@@ -50,9 +85,34 @@ function HomeContent({ searchQuery, selectedGenre, onGenreChange }) {
         let data
 
         if (searchQuery) {
-          data = await searchMovies(searchQuery, page)
+          data = mediaType === 'tv'
+            ? await searchTvShows(searchQuery, page)
+            : await searchMovies(searchQuery, page)
+          if (originalLanguage) {
+            data = {
+              ...data,
+              results: data.results?.filter(
+                item => item.original_language === originalLanguage
+              ) || [],
+            }
+          }
+        } else if (selectedProvider) {
+          data = await discoverByWatchProvider(
+            mediaType,
+            selectedProvider,
+            page,
+            'SE',
+            selectedGenre,
+            originalLanguage
+          )
         } else if (selectedGenre) {
-          data = await getMoviesByGenre(selectedGenre, page)
+          data = mediaType === 'tv'
+            ? await getTvShowsByGenre(selectedGenre, page, originalLanguage)
+            : await getMoviesByGenre(selectedGenre, page, originalLanguage)
+        } else if (originalLanguage) {
+          data = await discoverByOriginalLanguage(mediaType, originalLanguage, page)
+        } else if (mediaType === 'tv') {
+          data = await getPopularTvShows(page)
         } else {
           data = await getPopularMovies(page)
         }
@@ -98,7 +158,17 @@ function HomeContent({ searchQuery, selectedGenre, onGenreChange }) {
     return () => {
       active = false
     }
-  }, [page, retryCount, searchQuery, selectedGenre])
+  }, [mediaType, originalLanguage, page, retryCount, searchQuery, selectedGenre, selectedProvider])
+
+  function handleProviderChange(providerId) {
+    if (providerId === selectedProvider) return
+    setMovies([])
+    setError('')
+    setLoading(true)
+    setPage(1)
+    setTotalPages(1)
+    onProviderChange(providerId)
+  }
 
   function handleLoadMore() {
     if (loading) return
@@ -117,31 +187,71 @@ function HomeContent({ searchQuery, selectedGenre, onGenreChange }) {
     <main>
       <Hero
         movie={movies[0]}
+        mediaType={mediaType}
         watchlist={watchlist}
         onToggleWatchlist={onToggleWatchlist}
       />
 
       <section className="home-movies" id="movies">
+        <section className="browse-controls" aria-label="Browse filters">
 
-        <div className="movies-header">
-          <h2>
-            {searchQuery
-              ? `Search results for "${searchQuery}"`
-              : selectedGenre
-                ? 'Movies by Genre'
-                : 'Popular Movies'}
-          </h2>
+          <div className="movies-header">
+            <div className="browse-mode-row">
+              <div className="media-type-buttons" aria-label="Browse by type">
+                {['movie', 'tv'].map(type => (
+                  <button
+                    key={type}
+                    className={`genre-button ${mediaType === type ? 'genre-button-active' : ''}`}
+                    type="button"
+                    onClick={() => onMediaTypeChange(type)}
+                    aria-pressed={mediaType === type}
+                  >
+                    {type === 'movie' ? 'Movies' : 'TV Shows'}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                className={`language-filter ${originalLanguage === 'ar' ? 'language-filter-active' : ''}`}
+                type="button"
+                onClick={onLanguageChange}
+                aria-pressed={originalLanguage === 'ar'}
+              >
+                <span aria-hidden="true">ع</span>
+                Arabic only
+              </button>
+            </div>
+
+            <h2>
+              {searchQuery
+                ? `${originalLanguage === 'ar' ? 'Arabic ' : ''}${mediaType === 'tv' ? 'TV' : 'Movie'} results for "${searchQuery}"`
+                : selectedProvider
+                  ? `${originalLanguage === 'ar' ? 'Arabic ' : ''}${mediaType === 'tv' ? 'TV shows' : 'Movies'} on this platform`
+                : selectedGenre
+                  ? `${originalLanguage === 'ar' ? 'Arabic ' : ''}${mediaType === 'tv' ? 'TV Shows' : 'Movies'} by Genre`
+                  : `Popular ${originalLanguage === 'ar' ? 'Arabic ' : ''}${mediaType === 'tv' ? 'TV Shows' : 'Movies'}`}
+            </h2>
+
+            {!searchQuery && (
+              <GenreButtons
+                selectedGenre={selectedGenre}
+                onSelectGenre={onGenreChange}
+                mediaType={mediaType}
+              />
+            )}
+          </div>
 
           {!searchQuery && (
-            <GenreButtons
-              selectedGenre={selectedGenre}
-              onSelectGenre={onGenreChange}
+            <ProviderSelector
+              mediaType={mediaType}
+              selectedProvider={selectedProvider}
+              onSelectProvider={handleProviderChange}
             />
           )}
-        </div>
+        </section>
 
         {loading && (
-          <p role="status">Loading movies...</p>
+          <p role="status">Loading {mediaType === 'tv' ? 'TV shows' : 'movies'}...</p>
         )}
 
         {error && (
@@ -149,7 +259,7 @@ function HomeContent({ searchQuery, selectedGenre, onGenreChange }) {
         )}
 
         {!loading && !error && movies.length === 0 && (
-          <p>No movies found.</p>
+          <p>No {mediaType === 'tv' ? 'TV shows' : 'movies'} found.</p>
         )}
 
         <div className="movie-grid">
@@ -157,6 +267,7 @@ function HomeContent({ searchQuery, selectedGenre, onGenreChange }) {
             <MovieCard
               key={movie.id}
               movie={movie}
+              mediaType={mediaType}
               watchlist={watchlist}
               onToggleWatchlist={onToggleWatchlist}
             />

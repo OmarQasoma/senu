@@ -18,13 +18,20 @@ export function getWatchlist() {
 
 export function toggleWatchlist(movie) {
   const savedWatchlist = getWatchlist()
+  const mediaType = movie.media_type || 'movie'
 
   const movieExists = savedWatchlist.some(
-    savedMovie => savedMovie.id === movie.id
+    savedMovie => (
+      savedMovie.id === movie.id &&
+      (savedMovie.media_type || 'movie') === mediaType
+    )
   )
 
   const updatedWatchlist = movieExists
-    ? savedWatchlist.filter(savedMovie => savedMovie.id !== movie.id)
+    ? savedWatchlist.filter(savedMovie => !(
+        savedMovie.id === movie.id &&
+        (savedMovie.media_type || 'movie') === mediaType
+      ))
     : [...savedWatchlist, movie]
 
   localStorage.setItem(

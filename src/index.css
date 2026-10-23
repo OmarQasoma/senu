@@ -1,12 +1,39 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --color-bg: #070a10;
+  --color-bg-raised: #0c111b;
+  --color-surface: #111824;
+  --color-surface-hover: #172131;
+  --color-border: rgba(164, 180, 204, 0.16);
+  --color-border-strong: rgba(117, 220, 234, 0.42);
+  --color-text: #f4f7fb;
+  --color-text-muted: #9ba8ba;
+  --color-accent: #75dcea;
+  --color-accent-hover: #a0edf5;
+  --color-accent-ink: #041115;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --shadow-card: 0 18px 42px rgba(0, 0, 0, 0.32);
+  --shadow-focus: 0 0 0 3px rgba(117, 220, 234, 0.2);
+  --content-width: 1320px;
+}
+
 * {
   box-sizing: border-box;
 }
 
+html { scroll-behavior: smooth; }
+
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #052346;
-  color: #f4f5fa;
+  min-width: 320px;
+  background: radial-gradient(circle at 12% -10%, rgba(52,129,151,.16), transparent 34rem), var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
 }
 
 #root {
@@ -32,7 +59,16 @@ body {
 footer {
   margin-top: auto;
   padding: 60px 40px;
-  border-top: 1px solid #283040;
-  color: #ffffff;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-raised);
+  color: var(--color-text-muted);
   text-align: center;
+}
+
+button, input { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+::selection { background: rgba(117,220,234,.28); color: #fff; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
