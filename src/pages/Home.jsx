@@ -47,8 +47,8 @@ function Home() {
       onProviderChange={providerId => {
         setSelectedProvider(providerId)
       }}
-      onLanguageChange={() => {
-        setOriginalLanguage(language => language === 'ar' ? '' : 'ar')
+      onLanguageChange={languageCode => {
+        setOriginalLanguage(language => language === languageCode ? '' : languageCode)
       }}
     />
   )
@@ -66,6 +66,11 @@ function HomeContent({
   onLanguageChange,
 }) {
   const { watchlist, onToggleWatchlist } = useOutletContext()
+  const languageName = originalLanguage === 'ar'
+    ? 'Arabic '
+    : originalLanguage === 'ku'
+      ? 'Kurmanji '
+      : ''
 
   const [movies, setMovies] = useState([])
   const [error, setError] = useState('')
@@ -196,7 +201,20 @@ function HomeContent({
         <section className="browse-controls" aria-label="Browse filters">
 
           <div className="movies-header">
-            <div className="browse-mode-row">
+            <div className="browse-heading">
+              <div className="browse-title">
+                <span className="browse-eyebrow">Discover</span>
+                <h2>
+                  {searchQuery
+                    ? `${languageName}${mediaType === 'tv' ? 'TV' : 'Movie'} results for "${searchQuery}"`
+                    : selectedProvider
+                      ? `${languageName}${mediaType === 'tv' ? 'TV shows' : 'Movies'} on this platform`
+                    : selectedGenre
+                      ? `${languageName}${mediaType === 'tv' ? 'TV Shows' : 'Movies'} by Genre`
+                      : `Popular ${languageName}${mediaType === 'tv' ? 'TV Shows' : 'Movies'}`}
+                </h2>
+              </div>
+
               <div className="media-type-buttons" aria-label="Browse by type">
                 {['movie', 'tv'].map(type => (
                   <button
@@ -210,34 +228,39 @@ function HomeContent({
                   </button>
                 ))}
               </div>
-
-              <button
-                className={`language-filter ${originalLanguage === 'ar' ? 'language-filter-active' : ''}`}
-                type="button"
-                onClick={onLanguageChange}
-                aria-pressed={originalLanguage === 'ar'}
-              >
-                <span aria-hidden="true">ع</span>
-                Arabic only
-              </button>
             </div>
 
-            <h2>
-              {searchQuery
-                ? `${originalLanguage === 'ar' ? 'Arabic ' : ''}${mediaType === 'tv' ? 'TV' : 'Movie'} results for "${searchQuery}"`
-                : selectedProvider
-                  ? `${originalLanguage === 'ar' ? 'Arabic ' : ''}${mediaType === 'tv' ? 'TV shows' : 'Movies'} on this platform`
-                : selectedGenre
-                  ? `${originalLanguage === 'ar' ? 'Arabic ' : ''}${mediaType === 'tv' ? 'TV Shows' : 'Movies'} by Genre`
-                  : `Popular ${originalLanguage === 'ar' ? 'Arabic ' : ''}${mediaType === 'tv' ? 'TV Shows' : 'Movies'}`}
-            </h2>
+            <div className="filter-group">
+              <span className="filter-group-label">Language</span>
+              <div className="language-filters" aria-label="Original language">
+                {[
+                  { code: 'ar', label: 'Arabic', symbol: 'ع' },
+                  { code: 'ku', label: 'Kurmanji', symbol: 'K' },
+                ].map(language => (
+                  <button
+                    key={language.code}
+                    className={`language-filter ${originalLanguage === language.code ? 'language-filter-active' : ''}`}
+                    type="button"
+                    onClick={() => onLanguageChange(language.code)}
+                    aria-pressed={originalLanguage === language.code}
+                  >
+                    <span className="language-filter-icon" aria-hidden="true">{language.symbol}</span>
+                    <span className="language-filter-label">{language.label}</span>
+                    <span className="language-filter-check" aria-hidden="true">✓</span>
+                  </button>
+                ))}
+              </div>
+            </div>
 
             {!searchQuery && (
-              <GenreButtons
-                selectedGenre={selectedGenre}
-                onSelectGenre={onGenreChange}
-                mediaType={mediaType}
-              />
+              <div className="filter-group">
+                <span className="filter-group-label">Genre</span>
+                <GenreButtons
+                  selectedGenre={selectedGenre}
+                  onSelectGenre={onGenreChange}
+                  mediaType={mediaType}
+                />
+              </div>
             )}
           </div>
 
