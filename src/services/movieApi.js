@@ -28,7 +28,7 @@ export async function getMoviesByGenre(genreId, page = 1, originalLanguage = '')
     : ''
 
   return fetchFromTmdb(
-    `/discover/movie?with_genres=${genreId}&page=${page}${languageFilter}`,
+    `/discover/movie?with_genres=${encodeURIComponent(genreId)}&page=${page}${languageFilter}`,
     'Could not load movies for this genre. Please try again.'
   )
 }
@@ -146,4 +146,17 @@ export async function discoverByOriginalLanguage(mediaType, language, page = 1) 
       `&sort_by=popularity.desc&page=${page}`,
     `Could not load ${mediaType === 'tv' ? 'TV shows' : 'movies'} in this language. Please try again.`
   )
+}
+
+export async function getDiscoveryCollection(mediaType, collection) {
+  if (mediaType !== 'movie' && mediaType !== 'tv') {
+    throw new Error('Unsupported media type.')
+  }
+  if (collection === 'trending') {
+    return fetchFromTmdb(`/trending/${mediaType}/week`, 'Could not load trending titles. Please try again.')
+  }
+  if (collection === 'top-rated') {
+    return fetchFromTmdb(`/${mediaType}/top_rated`, 'Could not load top-rated titles. Please try again.')
+  }
+  return discoverByOriginalLanguage(mediaType, collection)
 }

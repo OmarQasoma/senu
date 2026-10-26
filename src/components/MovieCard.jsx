@@ -52,9 +52,11 @@ function MovieCard({ movie, mediaType = 'movie', watchlist, onToggleWatchlist })
       </p>
 
       <button
-        className="movie-card-watchlist"
+        className={`movie-card-watchlist ${isInWatchlist ? 'movie-card-watchlist-active' : ''}`}
         type="button"
         onClick={handleWatchlist}
+        aria-label={`${isInWatchlist ? 'Remove' : 'Add'} ${title} ${isInWatchlist ? 'from' : 'to'} watchlist`}
+        aria-pressed={isInWatchlist}
       >
         {isInWatchlist
           ? '− Remove'
